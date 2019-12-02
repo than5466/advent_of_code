@@ -48,7 +48,7 @@ def Part_2(lst, ans, max):
             var = Solution(data,i,j)
 
             if var[0] == ans:
-                return i, j
+                return 100 *i + j
 
 
 if __name__ == '__main__':
@@ -63,8 +63,8 @@ if __name__ == '__main__':
 
     Data_2 = Original_Data[:]
 
-    Part_2_Data = Part_2(Data_2,19690720,100)
+    Part_2_Solution = Part_2(Data_2,19690720,100)
 
-    print ("The answer is " + str(100*Part_2_Data[0]+Part_2_Data[1]))
+    print ("The answer is " + str(Part_2_Solution))
 
 
