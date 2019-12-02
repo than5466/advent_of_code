@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
 
-import math
-
-def Current_Indexes(lst, int):
-    return lst[int:int+4]
-
 
 def Op_Code_1(lst, index_1, index_2):
     return lst[index_1]+lst[index_2]
