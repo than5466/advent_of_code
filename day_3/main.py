@@ -170,6 +170,3 @@ if __name__ == '__main__':
     ans = Part_2_Go(First_Data,Second_Data,First,Second)
 
     print("Second question, answer: {}".format(ans))
-
-
-
