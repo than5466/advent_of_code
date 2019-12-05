@@ -69,13 +69,13 @@ def Program(Input):
                 Second_Parameter = Input[Second_Parameter]
 
             if OP_Code == 5:
-                if First_Parameter:
+                if First_Parameter != 0:
                     Counter = Second_Parameter
                 else:
                     Counter += 3
             
             if OP_Code == 6:
-                if First_Parameter:
+                if First_Parameter != 0:
                     Counter += 3
                 else:
                     Counter = Second_Parameter
