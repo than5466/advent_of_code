@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 
 class Node(object):
-    def __init__(self, data, depth, parent=None):
+    def __init__(self, data, depth):
         self.data = data
         self.children = []
-        self.parent = parent
         self.depth = depth
 
     def addChild(self, child):
@@ -31,7 +30,7 @@ def Add_Orbit(Map, Orbit, All_Orbitting_Planets):
     return Orbit_Map, All_Orbitting_Planets
 
 
-def Recursive_Descent(planet_node, orbit_map, parent_node=None):
+def Recursive_Descent(planet_node, orbit_map):
     planet = planet_node.getData()
     depth = planet_node.getDepth()
 
@@ -39,7 +38,7 @@ def Recursive_Descent(planet_node, orbit_map, parent_node=None):
         orbits = orbit_map[planet]
 
         for orbit in orbits:
-            planet_node.addChild(Recursive_Descent(Node(orbit, depth+1, planet), orbit_map))
+            planet_node.addChild(Recursive_Descent(Node(orbit, depth+1), orbit_map))
         return planet_node
 
     else:
