@@ -157,10 +157,7 @@ def Calculate_Signal(States):
     D = Amplifier(D)
     E.setValue(D.getValue())
     E = Amplifier(E)
-    if E.getValue():
-        A.setValue(E.getValue())
-    else:
-        A = False
+    A.setValue(E.getValue())
     return A,B,C,D,E
 
 def Program_1(IntCode):
@@ -206,7 +203,7 @@ def Program_2(IntCode):
                             while True:
                                 past_signal = signal
                                 States = Calculate_Signal(States)
-                                if States[0]:
+                                if States[0].getValue():
                                     signal = States[4].getValue()
                                 else:
                                     break
