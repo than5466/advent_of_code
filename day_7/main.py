@@ -177,6 +177,7 @@ def Program_2(IntCode):
                             past_signal = 0
                             IntCodes = [IntCode.copy(), IntCode.copy(), IntCode.copy(), IntCode.copy(), IntCode.copy()]
                             signal, pointers, IntCodes = Calculate_Signal_2(A,B,C,D,E,IntCodes)
+                            print(pointers)
                             while signal:
                                 past_signal = signal
                                 signal, pointers, IntCodes = Calculate_Signal_2(-1,-1,-1,-1,-1,IntCodes, signal, pointers)
