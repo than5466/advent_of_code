@@ -1,25 +1,56 @@
 #!/usr/bin/env python3
 
+class Amplifier_State():
+    def __init__(self,setting, code):
+        self.IntCode = code
+        self.Pointer = 0
+        self.Phase_Setting = setting
+        self.Value = 0
+        self.Phase_Status = True
+    
+    def setCode(self,code):
+        self.IntCode = code
+
+    def setValue(self,value):
+        self.Value = value
+    
+    def setPointer(self,pointer):
+        self.Pointer = pointer
+
+    def setStatusFalse(self):
+        self.Phase_Status = False
+
+    def getCode(self):
+        return self.IntCode
+
+    def getValue(self):
+        return self.Value
+
+    def getPointer(self):
+        return self.Pointer
+
+    def getStatus(self):
+        return self.Phase_Status
+
+    def getPhaseSetting(self):
+        return self.Phase_Setting
+
+
 def Quotient(number, divisor):
     return number // divisor
 
 def Remainder(number, divisor):
     return number % divisor
 
-def Op_Code_1(noun,verb):
-    return noun+verb
+def Amplifier(Node):
+    Length = len(Node.getCode())
+    Counter = Node.getPointer()
+    Status = Node.getStatus()
+    phase_setting = Node.getPhaseSetting()
+    amplified_signal = Node.getValue()
+    Intcode = Node.getCode()
 
-
-def Op_Code_2(noun, verb):
-    return noun*verb
-
-
-def Amplifier(Intcode, phase_setting, amplified_signal, pointer=0):
-
-    Length = len(Intcode)
-    Counter = pointer
-
-    if phase_setting >= 0:
+    if Status:
         inputs = [phase_setting,amplified_signal]
     else:
         inputs = [amplified_signal]
@@ -28,7 +59,7 @@ def Amplifier(Intcode, phase_setting, amplified_signal, pointer=0):
     while Counter < Length:
 
         First_Instruction = Intcode[Counter]
-        OP_Code = Remainder(First_Instruction,100) # OP-koden är sista två
+        OP_Code = Remainder(First_Instruction,100) 
         Noun_Mode = Remainder(Quotient(First_Instruction,100),10)
         Verb_Mode = Remainder(Quotient(First_Instruction,1000),10)
         Insert_Mode = Remainder(Quotient(First_Instruction,10000),10)
@@ -37,25 +68,23 @@ def Amplifier(Intcode, phase_setting, amplified_signal, pointer=0):
         Insert = Counter + 3
 
         if OP_Code == 99:
-            return False, Counter, Intcode
+            Node.setValue(False)
+            return Node
 
         elif OP_Code in [1,2]:
             Counter += 4
-
             Noun = Intcode[Noun_Index]
             Verb = Intcode[Verb_Index]
-            
             if Noun_Mode == 0:
                 Noun = Intcode[Noun]
             if Verb_Mode == 0:
                 Verb = Intcode[Verb]
             if Insert_Mode == 0:
                 Insert = Intcode[Insert]
-            
             if OP_Code == 1:
-                Intcode[Insert] = Op_Code_1(Verb,Noun)
+                Intcode[Insert] = Noun+Verb
             else:
-                Intcode[Insert] = Op_Code_2(Verb,Noun)
+                Intcode[Insert] = Noun*Verb
 
         elif OP_Code in [3,4]:
             Counter += 2
@@ -65,26 +94,25 @@ def Amplifier(Intcode, phase_setting, amplified_signal, pointer=0):
                 input_index += 1
                 Intcode[Insert] = Input_Variable
             else:
-                if input_index == len(inputs):
-                    return Intcode[Insert], Counter, Intcode
-                else: 
-                    return False, Counter, Intcode
+                if  input_index == len(inputs):
+                    Node.setValue(Intcode[Insert])
+                    Node.setStatusFalse()
+                    Node.setPointer(Counter)
+                    Node.setCode(Intcode)
+                    return Node
         
         elif OP_Code in [5,6]:
             First_Parameter = Intcode[Noun_Index]
             Second_Parameter = Intcode[Verb_Index]
             if Noun_Mode == 0:
                 First_Parameter = Intcode[First_Parameter]
-
             if Verb_Mode == 0:
                 Second_Parameter = Intcode[Second_Parameter]
-
             if OP_Code == 5:
                 if First_Parameter != 0:
                     Counter = Second_Parameter
                 else:
                     Counter += 3
-            
             if OP_Code == 6:
                 if First_Parameter != 0:
                     Counter += 3
@@ -94,57 +122,47 @@ def Amplifier(Intcode, phase_setting, amplified_signal, pointer=0):
         elif OP_Code in [7,8]:
             First_Parameter = Intcode[Noun_Index]
             Second_Parameter = Intcode[Verb_Index]
-
-
             if Noun_Mode == 0:
                 First_Parameter = Intcode[First_Parameter]
             if Verb_Mode == 0:
                 Second_Parameter = Intcode[Second_Parameter]
             if Insert_Mode == 0:
                 Insert = Intcode[Insert]
-
             if OP_Code == 7:
                 if First_Parameter < Second_Parameter:
                     Var = 1
                 else:
                     Var = 0
                 Intcode[Insert] = Var
-
             if OP_Code == 8:
                 if First_Parameter == Second_Parameter:
                     Var = 1
                 else:
                     Var = 0
                 Intcode[Insert] = Var
-            
             Counter += 4
-
 
         else:
             print("Nu blev det tamejfan fel")
             break
 
-def Calculate_Signal(Code, A, B, C, D, E, signal=0):
-    First_amp = Amplifier(Code,A,signal)[0]
-    Second_amp = Amplifier(Code,B,First_amp)[0]
-    Third_amp = Amplifier(Code,C,Second_amp)[0]
-    Forth_amp = Amplifier(Code,D,Third_amp)[0]
-    Fifth_amp = Amplifier(Code,E,Forth_amp)[0]
+def Calculate_Signal(States):
+    A,B,C,D,E = States
+    A = Amplifier(A)
+    B.setValue(A.getValue())
+    B = Amplifier(B)
+    C.setValue(B.getValue())
+    C = Amplifier(C)
+    D.setValue(C.getValue())
+    D = Amplifier(D)
+    E.setValue(D.getValue())
+    E = Amplifier(E)
+    if E.getValue():
+        A.setValue(E.getValue())
+    else:
+        A = False
+    return A,B,C,D,E
 
-    return Fifth_amp
-
-
-def Calculate_Signal_2(A, B, C, D, E, Codes, signal=0, pointer=[0,0,0,0,0]):
-    First_amp, first_pointer, IntCode_A = Amplifier(Codes[0],A,signal,pointer[0])
-    Second_amp, second_pointer, IntCode_B = Amplifier(Codes[1],B,First_amp,pointer[1])
-    Third_amp, third_pointer, IntCode_C = Amplifier(Codes[2],C,Second_amp,pointer[2])
-    Forth_amp, forth_pointer, IntCode_D = Amplifier(Codes[3],D,Third_amp,pointer[3])
-    Fifth_amp, fifth_pointer, IntCode_E = Amplifier(Codes[4],E,Forth_amp,pointer[4])
-
-    pointers = [first_pointer, second_pointer, third_pointer, forth_pointer, fifth_pointer]
-    IntCodes = [IntCode_A, IntCode_B, IntCode_C, IntCode_D, IntCode_E]
-    return Fifth_amp, pointers, IntCodes
-    
 def Program_1(IntCode):
 
     All_outputs = []
@@ -157,11 +175,16 @@ def Program_1(IntCode):
                     for E in range(5):
                         Check_List = list(dict.fromkeys([A,B,C,D,E]))
                         if len(Check_List) == 5:
-                            signal = Calculate_Signal(IntCode,A,B,C,D,E)
-                            All_outputs.append(signal)
+                            A_State, B_State = Amplifier_State(A,IntCode.copy()),Amplifier_State(B,IntCode.copy())
+                            C_State, D_State, E_State = Amplifier_State(C,IntCode.copy()),Amplifier_State(D,IntCode.copy()),Amplifier_State(E,IntCode.copy())
+                            States = [A_State,B_State,C_State,D_State,E_State]
+                            States = Calculate_Signal(States)
+                            Signal = States[4].getValue()
+                            All_outputs.append(Signal)
 
     max_output = max(All_outputs)
     return max_output                          
+
 
 def Program_2(IntCode):
 
@@ -175,11 +198,18 @@ def Program_2(IntCode):
                         Check_List = list(dict.fromkeys([A,B,C,D,E]))
                         if len(Check_List) == 5:
                             past_signal = 0
-                            IntCodes = [IntCode.copy(), IntCode.copy(), IntCode.copy(), IntCode.copy(), IntCode.copy()]
-                            signal, pointers, IntCodes = Calculate_Signal_2(A,B,C,D,E,IntCodes)
-                            while signal:
+                            A_State, B_State = Amplifier_State(A,IntCode.copy()),Amplifier_State(B,IntCode.copy())
+                            C_State, D_State, E_State = Amplifier_State(C,IntCode.copy()),Amplifier_State(D,IntCode.copy()),Amplifier_State(E,IntCode.copy())
+                            States = [A_State,B_State,C_State,D_State,E_State]
+                            States = Calculate_Signal(States)
+                            signal = States[4].getValue()
+                            while True:
                                 past_signal = signal
-                                signal, pointers, IntCodes = Calculate_Signal_2(-1,-1,-1,-1,-1,IntCodes, signal, pointers)
+                                States = Calculate_Signal(States)
+                                if States[0]:
+                                    signal = States[4].getValue()
+                                else:
+                                    break
                             All_outputs.append(past_signal)
 
     
@@ -210,4 +240,3 @@ if __name__ == '__main__':
     part_2 = Program_2(Data)
 
     print("Answer, Part 2: {}".format(part_2))
-
