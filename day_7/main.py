@@ -126,17 +126,9 @@ def Amplifier(Intcode, phase_setting, amplified_signal, pointer=0):
 
 def Calculate_Signal(Code, A, B, C, D, E, signal=0):
     First_amp = Amplifier(Code,A,signal)[0]
-    if First_amp == False:
-        return False
     Second_amp = Amplifier(Code,B,First_amp)[0]
-    if Second_amp == False:
-        return False
     Third_amp = Amplifier(Code,C,Second_amp)[0]
-    if Third_amp == False:
-        return False
     Forth_amp = Amplifier(Code,D,Third_amp)[0]
-    if Forth_amp == False:
-        return False
     Fifth_amp = Amplifier(Code,E,Forth_amp)[0]
 
     return Fifth_amp
@@ -185,7 +177,6 @@ def Program_2(IntCode):
                             past_signal = 0
                             IntCodes = [IntCode.copy(), IntCode.copy(), IntCode.copy(), IntCode.copy(), IntCode.copy()]
                             signal, pointers, IntCodes = Calculate_Signal_2(A,B,C,D,E,IntCodes)
-                            print(pointers)
                             while signal:
                                 past_signal = signal
                                 signal, pointers, IntCodes = Calculate_Signal_2(-1,-1,-1,-1,-1,IntCodes, signal, pointers)
