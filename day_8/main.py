@@ -30,7 +30,7 @@ def Program(Data, width, height):
                 if layer[index] == '0':
                     image[index] = ' '
                 elif layer[index] == '1':
-                    image[index] = '|'
+                    image[index] = '█'
     
     image = "".join(image)
 
