@@ -1,13 +1,8 @@
 #!/usr/bin/env python3
 
-def Split_To_Layers(Data, layer_width, layer_height):
-    layer_size = layer_width*layer_height
-    layers = []
-    while Data:
-        layer = Data[:layer_size]
-        Data = Data[layer_size:]
-        layers.append(layer)
-    return layers
+def Split_To_Layers(Data, width, height):
+    step = width*height
+    return [Data[index:index+step] for index in range(0,len(Data),step)]
 
 def Least_Zeroes(Layers):
     
