@@ -49,6 +49,8 @@ def Amplifier(Intcode, Input):
     value = 0
     No_Inputs = 0
     Max_Inputs = 1
+    No_Value_Updates = 0
+    Max_Value_Updates = 1
 
     while True:
         First_Instruction = Get_Value_At_Index(Intcode, Indexes_Outside_Scope, Pointer)
@@ -78,14 +80,17 @@ def Amplifier(Intcode, Input):
             Pointer += 4
 
         elif OP_Code in [3,4]:
-            Pointer += 2
             if OP_Code == 3:
                 No_Inputs += 1
                 if No_Inputs > Max_Inputs :
                     raise RuntimeError("Only a maximum of {} inputs allowed, this was the {} input".format(Max_Inputs, No_Inputs))
                 Intcode, Indexes_Outside_Scope = Insert_At_Correct_Index(Intcode, Indexes_Outside_Scope, Input, Noun_Index, Noun_Mode, Base)
             elif OP_Code == 4:
+                No_Value_Updates += 1
+                if No_Value_Updates > Max_Value_Updates:
+                    raise RuntimeError("Only a maximum of {} outputs allowed, this was the {} output".format(Max_Value_Updates, No_Value_Updates))
                 value = Get_Correct_Index(Intcode, Indexes_Outside_Scope, Noun_Index, Noun_Mode, Base)
+            Pointer += 2
         
         elif OP_Code in [5,6]:
             First_Parameter = Get_Correct_Index(Intcode, Indexes_Outside_Scope, Noun_Index, Noun_Mode, Base)
