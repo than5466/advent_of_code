@@ -9,7 +9,7 @@ def Remainder(number, divisor):
     return number % divisor
 
 
-def Get_Value_At_Index(Code, Dict, Index):
+def Get_Value(Code, Dict, Index):
     if Index < len(Code):
         return Code[Index]
     elif Index in Dict.keys():
@@ -17,13 +17,14 @@ def Get_Value_At_Index(Code, Dict, Index):
     return 0
 
 
-def Get_Correct_Index(Code, Dict, Index, Mode, Base):
+def Get_Parameter_Value(Code, Dict, Index, Mode, Base):
     if Mode == 0:
-        return Get_Value_At_Index(Code, Dict, Get_Value_At_Index(Code, Dict, Index))
-    elif Mode == 1:
-        return Get_Value_At_Index(Code, Dict, Index)
+        Index = Get_Value(Code, Dict, Index)
     elif Mode == 2:
-        return Get_Value_At_Index(Code, Dict, Get_Value_At_Index(Code, Dict, Index) + Base)
+        Index = Get_Value(Code, Dict, Index) + Base
+    elif Mode != 1:
+        raise RuntimeError("Parameter mode {} is not supported".format(Mode))
+    return Get_Value(Code, Dict, Index)
 
 
 def Insert(Code,Dict,Value,Index):
@@ -36,24 +37,24 @@ def Insert(Code,Dict,Value,Index):
 
 def Insert_At_Correct_Index(Code, Dict, Value, Index, Mode, Base):
     if Mode == 0:
-        Index = Get_Value_At_Index(Code, Dict, Index)
+        Index = Get_Value(Code, Dict, Index)
     elif Mode == 2:
-        Index = Get_Value_At_Index(Code, Dict, Index) + Base
+        Index = Get_Value(Code, Dict, Index) + Base
     return Insert(Code,Dict,Value,Index)
 
 
-def Amplifier(Intcode, Input):
+def Intcode_Program(Intcode, Input):
     Pointer = 0
     Base = 0
     Indexes_Outside_Scope = {}
     value = 0
-    No_Inputs = 0
+    Input_Count = 0
     Max_Inputs = 1
-    No_Value_Updates = 0
+    Update_Count = 0
     Max_Value_Updates = 1
 
     while True:
-        First_Instruction = Get_Value_At_Index(Intcode, Indexes_Outside_Scope, Pointer)
+        First_Instruction = Get_Value(Intcode, Indexes_Outside_Scope, Pointer)
         OP_Code = Remainder(First_Instruction,100) 
         Noun_Mode = Remainder(Quotient(First_Instruction,100),10)
         Verb_Mode = Remainder(Quotient(First_Instruction,1000),10)
@@ -66,8 +67,8 @@ def Amplifier(Intcode, Input):
             return value
 
         elif OP_Code in [1,2,7,8]:
-            Noun = Get_Correct_Index(Intcode, Indexes_Outside_Scope, Noun_Index, Noun_Mode, Base)
-            Verb = Get_Correct_Index(Intcode, Indexes_Outside_Scope, Verb_Index, Verb_Mode, Base)    
+            Noun = Get_Parameter_Value(Intcode, Indexes_Outside_Scope, Noun_Index, Noun_Mode, Base)
+            Verb = Get_Parameter_Value(Intcode, Indexes_Outside_Scope, Verb_Index, Verb_Mode, Base)    
             if OP_Code == 1:
                 Var = Noun+Verb
             elif OP_Code == 2:
@@ -81,20 +82,20 @@ def Amplifier(Intcode, Input):
 
         elif OP_Code in [3,4]:
             if OP_Code == 3:
-                No_Inputs += 1
-                if No_Inputs > Max_Inputs :
-                    raise RuntimeError("Only a maximum of {} inputs allowed, this was the {} input".format(Max_Inputs, No_Inputs))
+                Input_Count += 1
+                if Input_Count > Max_Inputs :
+                    raise RuntimeError("Only a maximum of {} inputs allowed, this was the {} input".format(Max_Inputs, Input_Count))
                 Intcode, Indexes_Outside_Scope = Insert_At_Correct_Index(Intcode, Indexes_Outside_Scope, Input, Noun_Index, Noun_Mode, Base)
             elif OP_Code == 4:
-                No_Value_Updates += 1
-                if No_Value_Updates > Max_Value_Updates:
-                    raise RuntimeError("Only a maximum of {} outputs allowed, this was the {} output".format(Max_Value_Updates, No_Value_Updates))
-                value = Get_Correct_Index(Intcode, Indexes_Outside_Scope, Noun_Index, Noun_Mode, Base)
+                Update_Count += 1
+                if Update_Count > Max_Value_Updates:
+                    raise RuntimeError("Only a maximum of {} outputs allowed, this was the {} output".format(Max_Value_Updates, Update_Count))
+                value = Get_Parameter_Value(Intcode, Indexes_Outside_Scope, Noun_Index, Noun_Mode, Base)
             Pointer += 2
         
         elif OP_Code in [5,6]:
-            First_Parameter = Get_Correct_Index(Intcode, Indexes_Outside_Scope, Noun_Index, Noun_Mode, Base)
-            Second_Parameter = Get_Correct_Index(Intcode, Indexes_Outside_Scope, Verb_Index, Verb_Mode, Base)
+            First_Parameter = Get_Parameter_Value(Intcode, Indexes_Outside_Scope, Noun_Index, Noun_Mode, Base)
+            Second_Parameter = Get_Parameter_Value(Intcode, Indexes_Outside_Scope, Verb_Index, Verb_Mode, Base)
             if OP_Code == 5:
                 if First_Parameter != 0:
                     Pointer = Second_Parameter
@@ -107,7 +108,7 @@ def Amplifier(Intcode, Input):
                     Pointer = Second_Parameter
         
         elif OP_Code == 9:
-            Parameter = Get_Correct_Index(Intcode, Indexes_Outside_Scope, Noun_Index, Noun_Mode, Base)
+            Parameter = Get_Parameter_Value(Intcode, Indexes_Outside_Scope, Noun_Index, Noun_Mode, Base)
             Base += Parameter
             Pointer += 2
 
@@ -116,11 +117,11 @@ def Amplifier(Intcode, Input):
 
 def Program(Code):
     #Part 1
-    a = Amplifier(Code.copy(),1)
+    a = Intcode_Program(Code.copy(),1)
     print("Answer, Part 1: {}".format(a))
 
     #Part 2
-    b = Amplifier(Code.copy(),2)
+    b = Intcode_Program(Code.copy(),2)
     print("Answer, Part 2: {}".format(b))
 
 if __name__ == '__main__':
