@@ -7,6 +7,7 @@ class Amplifier_State():
         self.Phase_Setting = setting
         self.Value = 0
         self.Phase_Status = True
+        self.Go = True
     
     def setCode(self,code):
         self.IntCode = code
@@ -19,6 +20,9 @@ class Amplifier_State():
 
     def setStatusFalse(self):
         self.Phase_Status = False
+    
+    def stop(self):
+        self.Go = False
 
     def getCode(self):
         return self.IntCode
@@ -34,6 +38,9 @@ class Amplifier_State():
 
     def getPhaseSetting(self):
         return self.Phase_Setting
+    
+    def Check(self):
+        return self.Go
 
 
 def Quotient(number, divisor):
@@ -68,7 +75,7 @@ def Amplifier(Node):
         Insert = Counter + 3
 
         if OP_Code == 99:
-            Node.setValue(False)
+            Node.stop()
             return Node
 
         elif OP_Code in [1,2]:
@@ -94,7 +101,7 @@ def Amplifier(Node):
                 input_index += 1
                 Intcode[Insert] = Input_Variable
             else:
-                if  input_index == len(inputs):
+                if input_index == len(inputs):
                     Node.setValue(Intcode[Insert])
                     Node.setStatusFalse()
                     Node.setPointer(Counter)
@@ -194,20 +201,17 @@ def Program_2(IntCode):
                     for E in range(5,10):
                         Check_List = list(dict.fromkeys([A,B,C,D,E]))
                         if len(Check_List) == 5:
-                            past_signal = 0
                             A_State, B_State = Amplifier_State(A,IntCode.copy()),Amplifier_State(B,IntCode.copy())
                             C_State, D_State, E_State = Amplifier_State(C,IntCode.copy()),Amplifier_State(D,IntCode.copy()),Amplifier_State(E,IntCode.copy())
                             States = [A_State,B_State,C_State,D_State,E_State]
                             States = Calculate_Signal(States)
                             signal = States[4].getValue()
-                            while True:
-                                past_signal = signal
+                            Go = States[4].Check()
+                            while Go:
                                 States = Calculate_Signal(States)
-                                if States[0].getValue():
-                                    signal = States[4].getValue()
-                                else:
-                                    break
-                            All_outputs.append(past_signal)
+                                Go = States[4].Check()
+                                signal = States[4].getValue()
+                            All_outputs.append(signal)
 
     
     max_output = max(All_outputs)
