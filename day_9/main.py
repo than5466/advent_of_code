@@ -43,7 +43,7 @@ def Insert_At_Correct_Index(Code, Dict, Value, Index, Mode, Base):
 
 
 def Amplifier(Intcode, Input):
-    Counter = 0
+    Pointer = 0
     Base = 0
     Indexes_Outside_Scope = {}
     value = 0
@@ -51,14 +51,14 @@ def Amplifier(Intcode, Input):
     Max_Inputs = 1
 
     while True:
-        First_Instruction = Get_Value_At_Index(Intcode, Indexes_Outside_Scope, Counter)
+        First_Instruction = Get_Value_At_Index(Intcode, Indexes_Outside_Scope, Pointer)
         OP_Code = Remainder(First_Instruction,100) 
         Noun_Mode = Remainder(Quotient(First_Instruction,100),10)
         Verb_Mode = Remainder(Quotient(First_Instruction,1000),10)
         Insert_Mode = Remainder(Quotient(First_Instruction,10000),10)
-        Noun_Index = Counter + 1
-        Verb_Index = Counter + 2
-        Insert_Index = Counter + 3
+        Noun_Index = Pointer + 1
+        Verb_Index = Pointer + 2
+        Insert_Index = Pointer + 3
         
         if OP_Code == 99:
             return value
@@ -75,10 +75,10 @@ def Amplifier(Intcode, Input):
             elif OP_Code == 8:
                 Var = int(Noun == Verb)
             Intcode, Indexes_Outside_Scope = Insert_At_Correct_Index(Intcode, Indexes_Outside_Scope, Var, Insert_Index, Insert_Mode, Base)
-            Counter += 4
+            Pointer += 4
 
         elif OP_Code in [3,4]:
-            Counter += 2
+            Pointer += 2
             if OP_Code == 3:
                 No_Inputs += 1
                 if No_Inputs > Max_Inputs :
@@ -92,19 +92,19 @@ def Amplifier(Intcode, Input):
             Second_Parameter = Get_Correct_Index(Intcode, Indexes_Outside_Scope, Verb_Index, Verb_Mode, Base)
             if OP_Code == 5:
                 if First_Parameter != 0:
-                    Counter = Second_Parameter
+                    Pointer = Second_Parameter
                 else:
-                    Counter += 3
+                    Pointer += 3
             elif OP_Code == 6:
                 if First_Parameter != 0:
-                    Counter += 3
+                    Pointer += 3
                 else:
-                    Counter = Second_Parameter
+                    Pointer = Second_Parameter
         
         elif OP_Code == 9:
             Parameter = Get_Correct_Index(Intcode, Indexes_Outside_Scope, Noun_Index, Noun_Mode, Base)
             Base += Parameter
-            Counter += 2
+            Pointer += 2
 
         else:
             raise RuntimeError("OP_Code {} not allowed".format(OP_Code))
