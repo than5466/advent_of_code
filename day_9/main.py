@@ -97,7 +97,7 @@ def Intcode_Program(Intcode, Input):
             First_Parameter = Get_Parameter_Value(Intcode, Indexes_Outside_Scope, Noun_Index, Noun_Mode, Base)
             Second_Parameter = Get_Parameter_Value(Intcode, Indexes_Outside_Scope, Verb_Index, Verb_Mode, Base)
             if OP_Code == 5:
-                if First_Parameter != 0:
+                if First_Parameter > 0:
                     Pointer = Second_Parameter
                 else:
                     Pointer += 3
@@ -129,3 +129,4 @@ if __name__ == '__main__':
     Data = [int(x) for x in f.read().split(",")]
 
     Program(Data)
+
