@@ -15,12 +15,12 @@ def Locate_Asteroid_Positions(Data):
     
     return locations
 
-def Add_Quotient(Asteroid_Coord, New_Asteroid_Coord, Set):
+def Add_If_Reachable(Asteroid_Coord, New_Asteroid_Coord, Set):
 
     x_diff = Asteroid_Coord[0]-New_Asteroid_Coord[0]
     y_diff = Asteroid_Coord[1]-New_Asteroid_Coord[1]
 
-    greatest_common_divisor = math.gcd(x_diff,y_diff)
+    greatest_common_divisor = abs(math.gcd(x_diff,y_diff))
 
     x_diff = x_diff / greatest_common_divisor
     y_diff = y_diff / greatest_common_divisor
@@ -32,48 +32,16 @@ def Add_Quotient(Asteroid_Coord, New_Asteroid_Coord, Set):
 
     return Set
 
-def Add_Vertical(Asteroid_Coord, New_Asteroid_Coord, vertical_set):
-    if New_Asteroid_Coord[1] > Asteroid_Coord[1]:
-        x = 1
-    else:
-        x = -1
-    
-    if x not in vertical_set:
-        vertical_set.add(x)
-
-    return vertical_set
-
-def If_Reachable(Asteroid_Coord, New_Asteroid_Coord, left_set, right_set):
-
-    if Asteroid_Coord[0] > New_Asteroid_Coord[0]:
-        return Add_Quotient(Asteroid_Coord, New_Asteroid_Coord, left_set), right_set
-    else:
-        return left_set, Add_Quotient(Asteroid_Coord, New_Asteroid_Coord, right_set)
-
-
 def Number_Of_Reachable_Asteroids(Location_Map, Position):
-    left_positions = set()
-    right_positions = set()
-    vertical_positions = set()
+    reachable_positions = set()
 
     for asteroid in Location_Map:
-        if asteroid == Position:
-            pass
-        elif asteroid[0] == Position[0]:
-            vertical_positions = Add_Vertical(Position, asteroid, vertical_positions)
-
-        else:
-            left_positions, right_positions = If_Reachable(Position, asteroid, left_positions, right_positions)
+        if asteroid != Position:
+            reachable_positions = Add_If_Reachable(Position, asteroid, reachable_positions)
     
-    reachable_number = len(left_positions) + len(right_positions) + len(vertical_positions)
+    return len(reachable_positions)
 
-    return reachable_number
-
-
-
-def Program(Data):
-
-    #Part 1
+def Part_1(Data):
     asteroid_positions = Locate_Asteroid_Positions(Data)
     max_reachable = 0
 
@@ -86,10 +54,8 @@ def Program(Data):
 
     print("Answer, Part 1: The maximum amount of reachable asteroids is {}, from asteroid at position {}.".format(max_reachable,asteroid_position))
 
-
-
 if __name__ == '__main__':
     f = open("data.txt", "r")
     Data = [x.rstrip() for x in f.readlines()]
 
-    Program(Data)
+    Part_1(Data.copy())
