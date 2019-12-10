@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import math
-
 import queue
 
 def Locate_Asteroid_Positions(Data):
@@ -52,7 +51,7 @@ def Map_Coordinates_To_Angles(Asteroid_Coord, Dict):
     X_coord = Asteroid_Coord[0]
     Y_coord = - Asteroid_Coord[1] # Compensation for the fact that the Y-axis is inverted.
     distance = math.hypot(X_coord,Y_coord)
-    angle = math.atan2(X_coord,Y_coord)
+    angle = math.atan2(X_coord,Y_coord) 
 
     if angle < 0:
         angle += 2*math.pi
@@ -60,8 +59,7 @@ def Map_Coordinates_To_Angles(Asteroid_Coord, Dict):
     if angle in Dict.keys():
         Dict[angle][distance] = Asteroid_Coord
     else:
-        Dict[angle] = {}
-        Dict[angle][distance] = Asteroid_Coord
+        Dict[angle] = {distance: Asteroid_Coord}
     return Dict
 
 
@@ -84,6 +82,8 @@ def Destroy_Many(Dict, queue, n):
             queue.put(next_angle)
             Destroyed_Planet, Dict = Destroy_Next(Dict, next_angle)
             counter += 1
+        if queue.empty():
+            break
     return Destroyed_Planet
 
 
@@ -117,14 +117,13 @@ def Program(Data):
         q.put(angle)
 
     relative_coordinates = Destroy_Many(mapping_angles, q, 200)
-    real_position = (relative_coordinates[0]+asteroid_position[0], relative_coordinates[1]+asteroid_position[1])
-    ans = 100*(real_position[0])+real_position[1]
+    real_position = (relative_coordinates[0] + asteroid_position[0], relative_coordinates[1] + asteroid_position[1])
+    ans = 100 * (real_position[0]) + real_position[1]
     print("Answer, Part 2: {}".format(ans))
 
 
 if __name__ == '__main__':
     f = open("data.txt", "r")
-    #f = open("test_data.txt", "r")
     Data = [x.rstrip() for x in f.readlines()]
 
     Program(Data.copy())
