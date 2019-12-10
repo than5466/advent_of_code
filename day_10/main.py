@@ -2,6 +2,7 @@
 
 import math
 
+
 def Locate_Asteroid_Positions(Data):
     height = range(len(Data))
     locations = []
@@ -14,10 +15,10 @@ def Locate_Asteroid_Positions(Data):
     
     return locations
 
-def Add_Quotient(Position, Add_Position, Set):
+def Add_Quotient(Asteroid_Coord, New_Asteroid_Coord, Set):
 
-    x_diff = Position[0]-Add_Position[0]
-    y_diff = Position[1]-Add_Position[1]
+    x_diff = Asteroid_Coord[0]-New_Asteroid_Coord[0]
+    y_diff = Asteroid_Coord[1]-New_Asteroid_Coord[1]
 
     greatest_common_divisor = math.gcd(x_diff,y_diff)
 
@@ -31,16 +32,8 @@ def Add_Quotient(Position, Add_Position, Set):
 
     return Set
 
-
-def Add_Correct(Position, Add_Position, left_set, right_set):
-
-    if Position[0] > Add_Position[0]:
-        return Add_Quotient(Position, Add_Position, left_set), right_set
-    else:
-        return left_set, Add_Quotient(Position, Add_Position, right_set)
-
-def Add_Vertical(Position, Add_Position, vertical_set):
-    if Add_Position[1] > Position[1]:
+def Add_Vertical(Asteroid_Coord, New_Asteroid_Coord, vertical_set):
+    if New_Asteroid_Coord[1] > Asteroid_Coord[1]:
         x = 1
     else:
         x = -1
@@ -50,20 +43,27 @@ def Add_Vertical(Position, Add_Position, vertical_set):
 
     return vertical_set
 
+def If_Reachable(Asteroid_Coord, New_Asteroid_Coord, left_set, right_set):
+
+    if Asteroid_Coord[0] > New_Asteroid_Coord[0]:
+        return Add_Quotient(Asteroid_Coord, New_Asteroid_Coord, left_set), right_set
+    else:
+        return left_set, Add_Quotient(Asteroid_Coord, New_Asteroid_Coord, right_set)
+
 
 def Number_Of_Reachable_Asteroids(Location_Map, Position):
     left_positions = set()
     right_positions = set()
     vertical_positions = set()
 
-    for each in Location_Map:
-        if each == Position:
+    for asteroid in Location_Map:
+        if asteroid == Position:
             pass
-        elif each[0] == Position[0]:
-            vertical_positions = Add_Vertical(Position, each, vertical_positions)
+        elif asteroid[0] == Position[0]:
+            vertical_positions = Add_Vertical(Position, asteroid, vertical_positions)
 
         else:
-            left_positions, right_positions = Add_Correct(Position, each, left_positions, right_positions)
+            left_positions, right_positions = If_Reachable(Position, asteroid, left_positions, right_positions)
     
     reachable_number = len(left_positions) + len(right_positions) + len(vertical_positions)
 
@@ -90,8 +90,6 @@ def Program(Data):
 
 if __name__ == '__main__':
     f = open("data.txt", "r")
-    #f = open("test_data.txt", "r")
-    #f = open("test_data_2.txt", "r")
     Data = [x.rstrip() for x in f.readlines()]
 
     Program(Data)
