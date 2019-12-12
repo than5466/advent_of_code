@@ -59,41 +59,40 @@ def Kinetic_Energy(Moon):
     return abs(Moon.x_velocity) + abs(Moon.y_velocity) + abs(Moon.z_velocity)
 
 def Find_Part_Match(Moons, coord):
-    time_duration = 0
+    #time_duration = 0
+    #Moon_Info = Moons.copy()
+    #Previous_Moon_Positions = set()
+
+    time_duration = 1
     Moon_Info = Moons.copy()
-    Previous_Moon_Positions = set()
+
+
 
     if coord == 'x':
+        First_Position = [(moon.x,moon.x_velocity) for moon in Moon_Info]
         while True:
-            moon_positions = ['({},{})'.format(moon.x,moon.x_velocity) for moon in Moon_Info]
-            moon_positions = ",".join(moon_positions)
-            if moon_positions in Previous_Moon_Positions:
-                break
-            else:
-                Previous_Moon_Positions.add(moon_positions)
             Moon_Info = Update(Moon_Info)
+            moon_positions = [(moon.x,moon.x_velocity) for moon in Moon_Info]
+            if moon_positions == First_Position:
+                break
             time_duration += 1
     elif coord == 'y':
+        First_Position = [(moon.y,moon.y_velocity) for moon in Moon_Info]
         while True:
-            moon_positions = ['({},{})'.format(moon.y,moon.y_velocity) for moon in Moon_Info]
-            moon_positions = ",".join(moon_positions)
-            if moon_positions in Previous_Moon_Positions:
-                break
-            else:
-                Previous_Moon_Positions.add(moon_positions)
             Moon_Info = Update(Moon_Info)
+            moon_positions = [(moon.y,moon.y_velocity) for moon in Moon_Info]
+            if moon_positions == First_Position:
+                break
             time_duration += 1
     elif coord == 'z':
+        First_Position = [(moon.z,moon.z_velocity) for moon in Moon_Info]
         while True:
-            moon_positions = ['({},{})'.format(moon.z,moon.z_velocity) for moon in Moon_Info]
-            moon_positions = ",".join(moon_positions)
-            if moon_positions in Previous_Moon_Positions:
-                break
-            else:
-                Previous_Moon_Positions.add(moon_positions)
             Moon_Info = Update(Moon_Info)
+            moon_positions = [(moon.z,moon.z_velocity) for moon in Moon_Info]
+            if moon_positions == First_Position:
+                break
             time_duration += 1
-    
+
     return time_duration
 
 def Program_1(Data, time_left):
