@@ -58,15 +58,9 @@ def Potential_Energy(Moon):
 def Kinetic_Energy(Moon):
     return abs(Moon.x_velocity) + abs(Moon.y_velocity) + abs(Moon.z_velocity)
 
-def Find_Part_Match(Moons, coord):
-    #time_duration = 0
-    #Moon_Info = Moons.copy()
-    #Previous_Moon_Positions = set()
-
+def Partial_Orbit_Length(Moons, coord):
     time_duration = 1
     Moon_Info = Moons.copy()
-
-
 
     if coord == 'x':
         First_Position = [(moon.x,moon.x_velocity) for moon in Moon_Info]
@@ -117,21 +111,20 @@ def Part_1(Data):
 def Program_2(Data):
 
     Moon_Info = Data_Processing(Data.copy())
-    x_order = Find_Part_Match(Moon_Info,'x')
-    y_order = Find_Part_Match(Moon_Info,'y')
-    z_order = Find_Part_Match(Moon_Info,'z')
+    x_order = Partial_Orbit_Length(Moon_Info,'x')
+    y_order = Partial_Orbit_Length(Moon_Info,'y')
+    z_order = Partial_Orbit_Length(Moon_Info,'z')
     return lcm3(x_order,y_order,z_order)
 
 
 def Part_2(Data):
     
     time = Program_2(Data)
-
     print("Answer, Part 2: {}".format(time))
 
 if __name__ == '__main__':
     f = open("data.txt", "r")
-
     Raw_Data = [x.rstrip() for x in f.readlines()]
+    
     Part_1(Raw_Data.copy())
     Part_2(Raw_Data.copy())
