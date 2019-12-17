@@ -27,8 +27,8 @@ def FFT_Part_2(number_seq):
 
 
     for n in number_seq:
-        curr_pos = cumulative % 10
-        next_phase_number.append(curr_pos)
+        cumulative = cumulative % 10
+        next_phase_number.append(cumulative)
         cumulative -= n
     return next_phase_number
 
