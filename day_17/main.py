@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+DIRECTIONS = ['Up','Right','Down','Left']
 
 
 class Board():
@@ -8,6 +9,13 @@ class Board():
         self.board = [[]]
         self.pointer = 0
         self.last_output = None
+        self.direction = 0
+        self.input_list = None
+        self.x = None
+        self.y = None
+
+    def Get_Output(self):
+        return self.last_output
     
     def Update_Output(self, value):
         self.last_output = value
@@ -33,6 +41,20 @@ class Board():
     
     def Get_Board(self):
         return self.board
+    
+    def Get_Current_Direction(self):
+        return DIRECTIONS[self.direction]
+
+    def Turn(self):
+        self.direction = (self.direction + 1) % 4
+    
+    def Insert_Inputs(self,lst):
+        self.input_list = lst
+    
+    def Get_Input(self):
+        inp = self.input_list[0]
+        self.input_list = self.input_list[1:]
+        return inp
 
 
 def Quotient(number, divisor):
@@ -49,7 +71,6 @@ def Get_Value(Code, Dict, Index):
     elif Index in Dict.keys():
         return Dict[Index]
     return 0
-
 
 def Get_Parameter_Value(Code, Dict, Index, Mode, Base):
     if Mode == 0:
@@ -75,7 +96,6 @@ def Insert_At_Correct_Index(Code, Dict, Value, Index, Mode, Base):
     elif Mode == 2:
         Index = Get_Value(Code, Dict, Index) + Base
     return Insert(Code,Dict,Value,Index)
-    
 
 def Intcode_Program(Intcode, Node):
     Pointer = 0
@@ -111,9 +131,7 @@ def Intcode_Program(Intcode, Node):
 
         elif OP_Code in [3,4]:
             if OP_Code == 3:
-                #Intcode, Indexes_Outside_Scope = Insert_At_Correct_Index(Intcode, Indexes_Outside_Scope, Input, Noun_Index, Noun_Mode, Base)
-                return
-
+                pass
             elif OP_Code == 4:
                 value = Get_Parameter_Value(Intcode, Indexes_Outside_Scope, Noun_Index, Noun_Mode, Base)
                 Node.Update(value)
@@ -144,7 +162,6 @@ def Intcode_Program(Intcode, Node):
 
 def Sum_Of_Alignments(board):
     cumulative_sum = 0
-
     height = len(board)
 
     for row in range(1,height-1):
@@ -162,9 +179,36 @@ def Intersection(board,x_coord,y_coord):
         return True
     return False
 
+
 def Scaffold(board,x_coord,y_coord):
-    return board[y_coord][x_coord] == '#'
-    
+    return board[y_coord][x_coord] in '#>'
+
+def Move_By_Step(board, direction, x_coord, y_coord):
+    if direction == 0:
+        return x_coord, y_coord - 1
+    elif direction == 1:
+        return x_coord + 1, y_coord
+    elif direction == 2:
+        return x_coord, y_coord + 1
+    elif direction == 3:
+        return x_coord - 1, y_coord
+
+
+def Steps(board, direction, x_coord, y_coord):
+    height = len(board)-2
+    width = len(board[0])
+    count = -1
+
+    while Scaffold(board, x_coord, y_coord):
+        count += 1
+        prev_x, prev_y = x_coord, y_coord
+        x_coord, y_coord = Move_By_Step(board, direction, x_coord, y_coord)
+        if x_coord in [-1,width]:
+            break
+        if y_coord in [-1, height]:
+            break
+
+    return count, prev_x, prev_y
 
 def Part_1(Code):
     #Part 1
@@ -172,12 +216,11 @@ def Part_1(Code):
     Node = Board()
     Node = Intcode_Program(Code,Node)
 
-    Node.Show_Board()
+    #Node.Show_Board()
 
     Alignment_Sum = Sum_Of_Alignments(Node.Get_Board())
 
     print("Answer, Part 1: {}".format(Alignment_Sum))
-
 
 
 if __name__ == '__main__':
