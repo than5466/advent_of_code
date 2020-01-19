@@ -56,7 +56,6 @@ class Board():
         self.input_list = self.input_list[1:]
         return inp
 
-
 def Quotient(number, divisor):
     return number // divisor
 
